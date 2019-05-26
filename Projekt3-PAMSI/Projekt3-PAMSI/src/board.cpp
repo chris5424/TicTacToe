@@ -1,8 +1,12 @@
 #include <iostream>
+#include <algorithm>
 
 #include "../inc/board.h"
 
 using namespace std;
+
+#define INF 2147483647 
+
 
 Board::Board(size_t size, int how_many)
 {
@@ -27,9 +31,9 @@ Board::~Board()
 {
 	for (size_t i = 0; i < size; i++)
 	{
-		delete tab[i];
+		//delete tab[i];
 	}
-	delete tab;
+	//delete tab;
 	tab = NULL;
 }
 
@@ -117,9 +121,6 @@ bool Board::ifDraw()
 				return false;
 		}
 	}
-	clearScreen();
-	display();
-	cout << "\nREMIS !!\n";
 	return true;
 }
 
@@ -175,7 +176,6 @@ bool Board::ifWin(char player)
 			}
 		}
 	}
-
 
 	//sprawdŸ przek¹tne
 	//w przek¹tna od góry w prawo dó³
@@ -247,9 +247,9 @@ bool Board::ifWin(char player)
 		for (size_t k = 0; k < size; k++)
 		{
 			count = 0;
-			for (size_t i = 0; i < size-k; i++)
+			for (size_t i = 0; i < size - k; i++)
 			{
-				if (tab[i][size-1-i-k] == player)
+				if (tab[i][size - 1 - i - k] == player)
 				{
 					count++;
 				}
@@ -269,56 +269,18 @@ bool Board::ifWin(char player)
 
 void Board::playHuman(Board &BRD)
 {
-	bool plr=0;
-	char player1 = 'X';
-	char player2 = 'O';
-	int x, y;
-	BRD.display();
-	while (!BRD.ifWin('X') && !BRD.ifDraw() && !BRD.ifWin('O'))
-	{
-		if (plr)
-		{
-			cout << "Tura gracza: " << player1<<endl;
-			cin >> x >> y;
-			BRD.changeField(x-1, y-1, 'X');
-			BRD.clearScreen();
-			BRD.display();
-			plr=!plr;
-		}
-		else
-		{
-			cout << "Tura gracza: " << player2<<endl;
-			cin >> x >> y;
-			BRD.changeField(x-1, y-1, 'O');
-			BRD.clearScreen();
-			BRD.display();
-			plr=!plr;
-		}
-	}
-	if (BRD.ifWin('X'))
-	{
-		cout << "\tGracz X wygral\n";
-	}
-	else if (BRD.ifWin('O'))
-	{
-		cout << "\tGracz O wygral\n";
-	}
-}
-
-void Board::playComputer(Board &BRD)
-{
 	bool plr = 0;
 	char player1 = 'X';
 	char player2 = 'O';
-	int x, y;
+	Move mov;
 	BRD.display();
 	while (!BRD.ifWin('X') && !BRD.ifDraw() && !BRD.ifWin('O'))
 	{
 		if (plr)
 		{
 			cout << "Tura gracza: " << player1 << endl;
-			cin >> x >> y;
-			BRD.changeField(x - 1, y - 1, 'X');
+			cin >> mov.x >> mov.y;
+			BRD.changeField(mov.x - 1, mov.y - 1, 'X');
 			BRD.clearScreen();
 			BRD.display();
 			plr = !plr;
@@ -326,8 +288,8 @@ void Board::playComputer(Board &BRD)
 		else
 		{
 			cout << "Tura gracza: " << player2 << endl;
-			cin >> x >> y;
-			BRD.changeField(x - 1, y - 1, 'O');
+			cin >> mov.x >> mov.y;
+			BRD.changeField(mov.x - 1, mov.y - 1, 'O');
 			BRD.clearScreen();
 			BRD.display();
 			plr = !plr;
@@ -341,4 +303,146 @@ void Board::playComputer(Board &BRD)
 	{
 		cout << "\tGracz O wygral\n";
 	}
+	else if (BRD.ifDraw())
+	{
+		display();
+		cout << "\nREMIS !!\n";
+	}
+}
+
+void Board::playComputer(Board &BRD)
+{
+	bool plr = 1;
+	char player1 = 'X';
+	char player2 = 'O';
+	Move mov;
+	BRD.display();
+	while (!BRD.ifWin('X') && !BRD.ifDraw() && !BRD.ifWin('O'))
+	{
+		if (plr)
+		{
+			cout << "Twoj ruch: " << player1 << endl;
+			cin >> mov.x >> mov.y;
+			BRD.changeField(mov.x - 1, mov.y - 1, 'X');
+			BRD.clearScreen();
+			BRD.display();
+			plr = !plr;
+		}
+		else
+		{
+			mov = BRD.computerMove(BRD);
+			BRD.changeField(mov.x, mov.y, 'O');
+			BRD.clearScreen();
+			//cout <<"x: "<< mov.x <<" y: "<< mov.y;
+			BRD.display();
+			cout << "Ruch komputera to: " << mov.x + 1 << " " << mov.y+1<<endl;
+			plr = !plr;
+		}
+	}
+	if (BRD.ifWin('X'))
+	{
+		cout << "\tGracz wygral\n";
+	}
+	else if (BRD.ifWin('O'))
+	{
+		cout << "\tKomputer wygral\n";
+	}
+	else if (BRD.ifDraw()) 
+	{
+		//display();
+		cout << "\nREMIS !!\n";
+	}
+	else
+	{
+		cout << "wyszedl z glownej petli, ale nikt nie wygral ani nie bylo remisu";
+	}
+}
+
+Move Board::computerMove(Board &BRD)
+{
+	Move mov;
+	int wynik, depth = 7;
+	int max = -10;
+	for (size_t i = 0; i < size; i++)
+	{
+		for (size_t j = 0; j < size; j++)
+		{
+			if (tab[i][j] == ' ')
+			{
+				tab[i][j] = 'O';
+				wynik = minMax(BRD, depth, -INF, INF, 0);
+				tab[i][j] = ' ';
+				if (wynik > max)
+				{
+					max = wynik;
+					mov.x = i;
+					mov.y = j;
+				}
+			}
+		}
+	}
+	return mov;
+}
+
+int Board::minMax(Board &BRD, int DepthOfRecursion, int alpha, int beta, bool computer)
+{
+	int eval=0, temp=0, x=0;
+	if (DepthOfRecursion == 0)
+	{
+		return 0;
+	}
+	if (BRD.ifWin('O'))return 1;
+	else if (BRD.ifWin('X'))return -1;
+
+	if (BRD.ifDraw()) return 0;
+
+	if (computer)
+	{
+		eval = -INF;
+		for (size_t i = 0; i < size; i++)
+		{
+			for (size_t j = 0; j < size; j++)
+			{
+				if (tab[i][j] == ' ')
+				{
+					BRD.changeField(i, j, 'O');
+					//temp = max(eval, alpha);
+					//x = minMax(BRD, DepthOfRecursion - 1, temp, beta, false);
+					alpha = max(eval, alpha);
+					x = minMax(BRD, DepthOfRecursion - 1, alpha, beta, false);
+					BRD.changeField(i, j, ' ');
+					if (x >= beta)
+					{
+						return x;
+					}
+					eval = max(eval, x);
+				}
+			}
+		}
+	}
+	else
+	{
+		eval = INF;
+		for (size_t i = 0; i < size; i++)
+		{
+			for (size_t j = 0; j < size; j++)
+			{
+				if (tab[i][j] == ' ')
+				{
+					BRD.changeField(i, j, 'X');
+					//temp = min(eval, beta);
+					//x = minMax(BRD, DepthOfRecursion - 1, alpha, temp, true);
+					beta = min(eval, beta);
+					x = minMax(BRD, DepthOfRecursion - 1, alpha, beta, true);
+					BRD.changeField(i, j, ' ');
+					if (x <= alpha)
+					{
+						return x;
+					}
+					eval = min(eval, x);
+				}
+			}
+		}
+	}
+	return eval;
 }

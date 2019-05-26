@@ -6,12 +6,12 @@
 using namespace std;
 int main()
 {
-	size_t size=5;
-	int h_m_t_w =4;
+	size_t size = 5;
+	int h_m_t_w = 5;
 	//cin >> size;
 	Board brd(size, h_m_t_w);
 	//brd.changeField(0, 0, 'X');
-	brd.playHuman(brd);
+	//brd.playHuman(brd);
 	//brd.changeField(1, 0, 'X');
 	//brd.changeField(1, 1, 'X');
 	//brd.changeField(1, 2, 'X');
@@ -26,7 +26,7 @@ int main()
 	//brd.changeField(2, 0, ' ');
 	//brd.display();
 	//brd.clearBoard();
-	/*while (!brd.ifWin('X'))
+	/*while (!brd.ifDraw())
 	{
 		int x, y;
 		cin >> x >> y;
@@ -34,7 +34,7 @@ int main()
 		brd.clearScreen();
 		brd.display();
 	}
-	cout << "Wygrana\n";*/
+	cout << "Remis\n";*/
 	//cout << brd.ifWin('X');
 
 
@@ -52,34 +52,44 @@ int main()
 
 
 
-	//brd.header();
-	//char choice = brd.menu();
+	brd.header();
+	char choice = brd.menu();
 	//brd.clearScreen();
-	//switch (choice) {
-	//case 'K':
-	//	//brd.playComputer();
-	//	cout << "grasz przeciwko komputerowi";
-	//	break;
-	//case 'k':
-	//	//brd.playComputer();
-	//	cout << "grasz przeciwko komputerowi";
-	//	break;
-	//case 'G':
-	//	//brd.playHuman();
-	//	cout << "grasz przeciwko innemu graczowi";
-	//	break;
-	//case 'g':
-	//	//brd.playHuman();
-	//	cout << "grasz przeciwko innemu graczowi";
-	//	break;
-	//case 'W':
-	//	brd.header();
-	//	cout << "Do Svidaniya!\n";
-	//	break;
-	//case 'w':
-	//	brd.header();
-	//	cout << "Do Svidaniya!\n";
-	//}
+	switch (choice) {
+	case 'K':
+		brd.clearScreen();
+		brd.header();
+		cout << "Grasz przeciwko komputerowi\n";
+		brd.playComputer(brd);
+		break;
+	case 'k':
+		brd.clearScreen();
+		brd.header();
+		cout << "Grasz przeciwko komputerowi\n";
+		brd.playComputer(brd);
+		break;
+	case 'G':
+		brd.clearScreen();
+		brd.header();
+		cout << "Grasz przeciwko innemu graczowi\n";
+		brd.playHuman(brd);
+		break;
+	case 'g':
+		brd.clearScreen();
+		brd.header();
+		cout << "Grasz przeciwko innemu graczowi\n";
+		brd.playHuman(brd);
+		break;
+	case 'W':
+		brd.clearScreen();
+		brd.header();
+		cout << "Do Svidaniya!\n";
+		break;
+	case 'w':
+		brd.clearScreen();
+		brd.header();
+		cout << "Do Svidaniya!\n";
+	}
 	system("pause");
 }
 

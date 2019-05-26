@@ -1,5 +1,12 @@
 #pragma once
 
+class Move
+{
+public:
+	int x;
+	int y;
+};
+
 class Board
 {
 private:
@@ -19,4 +26,7 @@ public:
 	bool ifDraw();
 	void playHuman(Board &BRD);
 	void playComputer(Board &BRD);
+	Move computerMove(Board &BRD);
+	int minMax(Board &BRD, int DepthOfRecursion, int alpha, int beta, bool computer);
+
 };
