@@ -3,8 +3,8 @@
 class Move
 {
 public:
-	int x;
-	int y;
+	size_t x;
+	size_t y;
 };
 
 class Board
@@ -17,7 +17,7 @@ public:
 	Board(size_t size, int how_many);
 	~Board();
 	void display();
-	void changeField(int col, int row, char sign);
+	void changeField(size_t col, size_t row, char sign);
 	void clearBoard();
 	void header();
 	char menu();

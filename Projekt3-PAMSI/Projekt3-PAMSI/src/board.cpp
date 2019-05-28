@@ -69,7 +69,7 @@ void Board::display()
 	}
 }
 
-void Board::changeField(int row, int col, char sign)
+void Board::changeField(size_t row, size_t col, char sign)
 {
 	tab[row][col] = sign;
 }
@@ -186,7 +186,7 @@ bool Board::ifWin(char player)
 			count = 0;
 			for (size_t i = k; i < size; i++)
 			{
-				int p = i - k;
+				size_t p = i - k;
 				if (tab[i][p] == player)
 				{
 					count++;
@@ -206,7 +206,7 @@ bool Board::ifWin(char player)
 			count = 0;
 			for (size_t i = k; i < size; i++)
 			{
-				int p = i - k;
+				size_t p = i - k;
 				if (tab[p][i] == player)
 				{
 					count++;
@@ -278,8 +278,11 @@ void Board::playHuman(Board &BRD)
 	{
 		if (plr)
 		{
-			cout << "Tura gracza: " << player1 << endl;
-			cin >> mov.x >> mov.y;
+			do
+			{
+				cout << "Twoj ruch: " << player1 << endl;
+				cin >> mov.x >> mov.y;
+			} while (mov.x > size || mov.y > size || (tab[mov.x - 1][mov.y - 1] == 'O') || (tab[mov.x - 1][mov.y - 1] == 'X'));
 			BRD.changeField(mov.x - 1, mov.y - 1, 'X');
 			BRD.clearScreen();
 			BRD.display();
@@ -287,8 +290,11 @@ void Board::playHuman(Board &BRD)
 		}
 		else
 		{
-			cout << "Tura gracza: " << player2 << endl;
-			cin >> mov.x >> mov.y;
+			do
+			{
+				cout << "Twoj ruch: " << player2 << endl;
+				cin >> mov.x >> mov.y;
+			} while (mov.x > size || mov.y > size || (tab[mov.x - 1][mov.y - 1] == 'O') || (tab[mov.x - 1][mov.y - 1] == 'X'));
 			BRD.changeField(mov.x - 1, mov.y - 1, 'O');
 			BRD.clearScreen();
 			BRD.display();
@@ -321,8 +327,11 @@ void Board::playComputer(Board &BRD)
 	{
 		if (plr)
 		{
-			cout << "Twoj ruch: " << player1 << endl;
-			cin >> mov.x >> mov.y;
+			do
+			{
+				cout << "Twoj ruch: " << player1 << endl;
+				cin >> mov.x >> mov.y;
+			} while (mov.x > size || mov.y > size||(tab[mov.x-1][mov.y-1]=='O')|| (tab[mov.x-1][mov.y-1] == 'X'));
 			BRD.changeField(mov.x - 1, mov.y - 1, 'X');
 			BRD.clearScreen();
 			BRD.display();
@@ -361,7 +370,7 @@ void Board::playComputer(Board &BRD)
 Move Board::computerMove(Board &BRD)
 {
 	Move mov;
-	int wynik, depth = 7;
+	int result, depth = 7;
 	int max = -10;
 	for (size_t i = 0; i < size; i++)
 	{
@@ -369,12 +378,14 @@ Move Board::computerMove(Board &BRD)
 		{
 			if (tab[i][j] == ' ')
 			{
-				tab[i][j] = 'O';
-				wynik = minMax(BRD, depth, -INF, INF, 0);
-				tab[i][j] = ' ';
-				if (wynik > max)
+				//tab[i][j] = 'O';
+				BRD.changeField(i, j, 'O');
+				result = minMax(BRD, depth, -INF, INF, 0);
+				BRD.changeField(i, j, ' ');
+				//tab[i][j] = ' ';
+				if (result > max)
 				{
-					max = wynik;
+					max = result;
 					mov.x = i;
 					mov.y = j;
 				}
@@ -386,7 +397,7 @@ Move Board::computerMove(Board &BRD)
 
 int Board::minMax(Board &BRD, int DepthOfRecursion, int alpha, int beta, bool computer)
 {
-	int eval=0, temp=0, x=0;
+	int eval=0, x=0;
 	if (DepthOfRecursion == 0)
 	{
 		return 0;
