@@ -31,9 +31,9 @@ Board::~Board()
 {
 	for (size_t i = 0; i < size; i++)
 	{
-		//delete tab[i];
+		delete tab[i];
 	}
-	//delete tab;
+	delete tab;
 	tab = NULL;
 }
 
@@ -370,7 +370,7 @@ void Board::playComputer(Board &BRD)
 Move Board::computerMove(Board &BRD)
 {
 	Move mov;
-	int result, depth = 7;
+	int result, depth = 9;
 	int max = -10;
 	for (size_t i = 0; i < size; i++)
 	{
@@ -378,11 +378,9 @@ Move Board::computerMove(Board &BRD)
 		{
 			if (tab[i][j] == ' ')
 			{
-				//tab[i][j] = 'O';
 				BRD.changeField(i, j, 'O');
 				result = minMax(BRD, depth, -INF, INF, 0);
 				BRD.changeField(i, j, ' ');
-				//tab[i][j] = ' ';
 				if (result > max)
 				{
 					max = result;
@@ -417,16 +415,16 @@ int Board::minMax(Board &BRD, int DepthOfRecursion, int alpha, int beta, bool co
 				if (tab[i][j] == ' ')
 				{
 					BRD.changeField(i, j, 'O');
-					//temp = max(eval, alpha);
-					//x = minMax(BRD, DepthOfRecursion - 1, temp, beta, false);
 					alpha = max(eval, alpha);
 					x = minMax(BRD, DepthOfRecursion - 1, alpha, beta, false);
 					BRD.changeField(i, j, ' ');
+					eval = max(eval, x);
 					if (x >= beta)
 					{
-						return x;
+						//return x;
+						break;
 					}
-					eval = max(eval, x);
+					
 				}
 			}
 		}
@@ -441,16 +439,16 @@ int Board::minMax(Board &BRD, int DepthOfRecursion, int alpha, int beta, bool co
 				if (tab[i][j] == ' ')
 				{
 					BRD.changeField(i, j, 'X');
-					//temp = min(eval, beta);
-					//x = minMax(BRD, DepthOfRecursion - 1, alpha, temp, true);
 					beta = min(eval, beta);
 					x = minMax(BRD, DepthOfRecursion - 1, alpha, beta, true);
 					BRD.changeField(i, j, ' ');
+					eval = min(eval, x);
 					if (x <= alpha)
 					{
-						return x;
+						//return x;
+						break;
 					}
-					eval = min(eval, x);
+					
 				}
 			}
 		}
