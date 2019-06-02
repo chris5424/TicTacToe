@@ -7,7 +7,6 @@ using namespace std;
 
 #define INF 2147483647 
 
-
 Board::Board(size_t size, int how_many)
 {
 	this->size = size;
